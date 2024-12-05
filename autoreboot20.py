@@ -99,27 +99,28 @@ def reboot_nodes_on_server(ocean_base_folder, eligible_nodes, rebooted_nodes):
                     if environment:
                         allowed_admins_str = environment.get("ALLOWED_ADMINS", "[]")
                         allowed_admins = json.loads(allowed_admins_str)
-                        
+                        node_is_eligible = any(set(allowed_admins) == set(node["allowed_admins"]) for node in eligible_nodes)
+
                         if node_is_eligible:
                             logging.info(f"Пропуск ноды в {node_folder} так как она является eligible")
+                            continue
 
                         # Перезагружаем ноду, если она не является eligible
-                        if not node_is_eligible:
-                            logging.info(f"Перезапуск ноды в {node_folder} так как она не является eligible")
-                            non_eligible_count += 1
-                            down_command = f"cd {node_folder} && docker compose down"
-                            prune_command = "docker system prune -af"
-                            up_command = f"cd {node_folder} && docker compose up -d"
+                        logging.info(f"Перезапуск ноды в {node_folder} так как она не является eligible")
+                        non_eligible_count += 1
+                        down_command = f"cd {node_folder} && docker compose down"
+                        prune_command = "docker system prune -af"
+                        up_command = f"cd {node_folder} && docker compose up -d"
 
-                            logging.info(f"Остановка контейнера в {node_folder}")
-                            os.system(down_command)
+                        logging.info(f"Остановка контейнера в {node_folder}")
+                        os.system(down_command)
 
-                            logging.info(f"Очистка системы на сервере")
-                            os.system(prune_command)
+                        logging.info(f"Очистка системы на сервере")
+                        os.system(prune_command)
 
-                            logging.info(f"Запуск контейнера в {node_folder}")
-                            os.system(up_command)
-                            rebooted_nodes.append({"ip": "localhost", "node_id": node_folder})
+                        logging.info(f"Запуск контейнера в {node_folder}")
+                        os.system(up_command)
+                        rebooted_nodes.append({"ip": "localhost", "node_id": node_folder})
 
                         # Обновленная проверка, что контейнер запущен
                         check_running_command = f"cd {node_folder} && docker compose ps"
