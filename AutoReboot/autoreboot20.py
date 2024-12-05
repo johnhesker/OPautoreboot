@@ -99,7 +99,9 @@ def reboot_nodes_on_server(ocean_base_folder, eligible_nodes, rebooted_nodes):
                     if environment:
                         allowed_admins_str = environment.get("ALLOWED_ADMINS", "[]")
                         allowed_admins = json.loads(allowed_admins_str)
-                        node_is_eligible = any(set(allowed_admins) == set(node["allowed_admins"]) for node in eligible_nodes)
+                        
+                        if node_is_eligible:
+                            logging.info(f"Пропуск ноды в {node_folder} так как она является eligible")
 
                         # Перезагружаем ноду, если она не является eligible
                         if not node_is_eligible:
