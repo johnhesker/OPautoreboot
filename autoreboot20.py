@@ -17,7 +17,7 @@ logging.basicConfig(
     ]
 )
 
-REBOOT_INTERVAL_HOURS = 2.5
+REBOOT_INTERVAL_HOURS = 1.5
 
 # Словарь для хранения статистики перезапусков по кластерам
 reboot_stats = {}
